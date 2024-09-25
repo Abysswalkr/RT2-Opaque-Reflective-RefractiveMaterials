@@ -6,8 +6,8 @@ from material import *
 from lights import *
 
 # Configuración de pantalla
-width =  540
-height = 540
+width =  900
+height = 700
 
 screen = pygame.display.set_mode((width, height), pygame.SCALED )
 clock = pygame.time.Clock()
@@ -26,8 +26,15 @@ rt.lights.append(DirectionalLight(direction=[0, 1, 0], intensity=0.8))  # Luz de
 rt.lights.append(DirectionalLight(direction=[0.5, 1, -1], intensity=0.8, color=[1, 1, 1]))  # Otra luz desde un ángulo
 rt.lights.append(AmbientLight(intensity=0.1))  # Luz ambiental débil
 
-rt.scene.append( Sphere(position = [0, 0, -5], radius = 1.5, material = mirror))
-rt.scene.append( Sphere(position = [1, 1, -3], radius = 0.5, material = grass))
+# Creación de 6 esferas en 2 filas (3 arriba, 3 abajo)
+rt.scene.append(Sphere(position=[-1.5, 1, -3], radius=0.5, material=grass))      # Esfera 1 (arriba izquierda)
+rt.scene.append(Sphere(position=[0, 1, -3], radius=0.5, material=grass))         # Esfera 2 (arriba centro)
+rt.scene.append(Sphere(position=[1.5, 1, -3], radius=0.5, material=grass))       # Esfera 3 (arriba derecha)
+
+rt.scene.append(Sphere(position=[-1.5, -1, -3], radius=0.5, material=grass))     # Esfera 4 (abajo izquierda)
+rt.scene.append(Sphere(position=[0, -1, -3], radius=0.5, material=grass))        # Esfera 5 (abajo centro)
+rt.scene.append(Sphere(position=[1.5, -1, -3], radius=0.5, material=grass))      # Esfera 6 (abajo derecha)
+
 
 # Renderizado de la escena
 rt.glRender()
