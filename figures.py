@@ -1,38 +1,38 @@
-from intercept import Interception
+from intercept import Intercept
 from MathLib import *
 
 
-class Geometria(object):
-    def __init__(self, centro, propiedadesMaterial):
-        self.centro = centro
-        self.propiedadesMaterial = propiedadesMaterial
-        self.tipoGeometria = "Ninguno"
+class Shape(object):
+    def __init__(self, position, material):
+        self.position = position
+        self.material = material
+        self.type = "None"
 
-    def intersectarRayo(self, origen, direccion):
+    def ray_intersect(self, orig, dir):
         return None
 
 
-class Esfera(Geometria):
-    def __init__(self, centro, radio, propiedadesMaterial):
-        super().__init__(centro, propiedadesMaterial)
-        self.radio = radio
-        self.tipoGeometria = "Esfera"
+class Sphere(Shape):
+    def __init__(self, position, radius, material):
+        super().__init__(position, material)
+        self.radius = radius
+        self.type = "Sphere"
 
-    def intersectarRayo(self, origen, direccion):
-        vectorDistancia = restar_elementos(self.centro, origen)
-        tca = dot(vectorDistancia, direccion)
+    def rayIntersect(self, origin, direction):
+        distance_vect = sub_elements(self.position, origin)
+        tca = dot(distance_vect, direction)
 
-        distanciaNormCuadrada = sum([componente ** 2 for componente in vectorDistancia])  # ||L||^2
-        distanciaProyectadaCuadrada = distanciaNormCuadrada - tca ** 2
-        if distanciaProyectadaCuadrada < 0:
+        normDistSq = sum([comp ** 2 for comp in distance_vect])  # ||L||^2
+        projDistSq = normDistSq - tca ** 2
+        if projDistSq < 0:
             return None  # No hay intersección
 
-        distanciaProyectada = sqrt(distanciaProyectadaCuadrada)
+        projDist = sqrt(projDistSq)
 
-        if distanciaProyectada > self.radio:
+        if projDist > self.radius:
             return None
 
-        thc = (self.radio ** 2 - distanciaProyectada ** 2) ** 0.5
+        thc = (self.radius ** 2 - projDist ** 2) ** 0.5
 
         t0 = tca - thc
         t1 = tca + thc
@@ -42,18 +42,13 @@ class Esfera(Geometria):
         if t0 < 0:
             return None
 
-        # Punto de intersección = origen + direccion * t0
-        direccionEscalada = [comp * t0 for comp in direccion]  # direccion * t0
-        puntoInterseccion = suma_vectores(origen, direccionEscalada)  # origen + (direccion * t0)
+        # Punto de intersección = origin + direction * t0
+        scaledDir = [comp * t0 for comp in direction]  # direction * t0
+        intersectPoint = sum_elements(origin, scaledDir)  # origin + (direction * t0)
 
-        # vectorNormal = (PuntoIntersección - self.centro).normalize()
-        diferenciaPuntoCentro = restar_elementos(puntoInterseccion, self.centro)
-        vectorNormal = normalize_vector(diferenciaPuntoCentro)
+        # normalVec = (PuntoIntersección - self.centro).normalize()
+        pointDiff = sub_elements(intersectPoint, self.position)
+        normalVec = normalize_vector(pointDiff)
 
-        return Interception(
-            point=puntoInterseccion,
-            normal=vectorNormal,
-            distancia=t0,
-            obj=self
-        )
+        return Intercept(point=intersectPoint, normal=normalVec, distance=t0, obj=self)
 

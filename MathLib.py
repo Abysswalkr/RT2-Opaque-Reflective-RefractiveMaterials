@@ -146,26 +146,26 @@ def interpolate(valA, valB, valC, u, v, w):
     return u * valA + v * valB + w * valC
 
 
-def calcularReflejo(normalVector, incomingDirection):
+def calc_reflection(normalVector, incomingDirection):
     # R = 2 * (N . L) * N - L
-    productoPunto = dot(normalVector, incomingDirection)
-    normalEscalada = [2 * productoPunto * componente for componente in normalVector]  # 2 * (N . L) * N
-    vectorReflejado = restar_elementos(normalEscalada, incomingDirection)  # 2 * (N . L) * N - L
+    dot_product = dot(normalVector, incomingDirection)
+    norm_scale = [2 * dot_product * comp for comp in normalVector]  # 2 * (N . L) * N
+    reflect_vector = sub_elements(norm_scale, incomingDirection)  # 2 * (N . L) * N - L
 
     # Normalizar el vector reflejado
-    magnitud = sqrt(sum([componente ** 2 for componente in vectorReflejado]))
-    vectorReflejadoNormalizado = [componente / magnitud for componente in vectorReflejado]
+    scale = sqrt(sum([comp ** 2 for comp in reflect_vector]))
+    vec_reflect_norm = [comp / scale for comp in reflect_vector]
 
-    return vectorReflejadoNormalizado
+    return vec_reflect_norm
 
 
-def restar_elementos(v1, v2):
+def sub_elements(v1, v2):
     if len(v1) != len(v2):
         raise ValueError("Los vectores deben tener la misma longitud")
     return [a - b for a, b in zip(v1, v2)]
 
 
-def suma_vectores(v1, v2):
+def sum_elements(v1, v2):
     if len(v1) != len(v2):
         raise ValueError("Las listas deben tener la misma longitud.")
     return [a + b for a, b in zip(v1, v2)]

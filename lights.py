@@ -1,49 +1,52 @@
 from MathLib import *
 
-class Illumination(object):
-    def __init__(self, lightColor=[1, 1, 1], brightness=1.0, lightCategory="None"):
-        self.lightColor = lightColor
-        self.brightness = brightness
-        self.lightCategory = lightCategory
 
-    def calculateLightIntensity(self, hitPoint=None):
-        return [(c * self.brightness) for c in self.lightColor]
+class Light(object):
+    def __init__(self, color=[1, 1, 1], intensity=1.0, lighType="None"):
+        self.color = color
+        self.intensity = intensity
+        self.lighType = lighType
 
-    def calculateSpecularHighlight(self, hitPoint, observerPosition):
+    def GetLightColor(self, intercept=None):
+        return [(i * self.intensity) for i in self.color]
+
+    def GetSpecularColor(self, intercept, viewPos):
         return [0, 0, 0]
 
-class BackgroundLight(Illumination):
-    def __init__(self, lightColor=[1, 1, 1], brightness=1.0):
-        super().__init__(lightColor, brightness, "Ambient")
 
-class Sunlight(Illumination):
-    def __init__(self, lightColor=[1, 1, 1], brightness=1.0, directionVector=[0, -1, 0]):
-        super().__init__(lightColor, brightness, "Directional")
-        self.directionVector = normalize_vector(directionVector)
+class AmbientLight(Light):
+    def __init__(self, color=[1, 1, 1], intensity=1.0):
+        super().__init__(color, intensity, "Ambient")
 
-    def calculateLightIntensity(self, hitPoint=None):
-        baseLightColor = super().calculateLightIntensity()
-        if hitPoint:
-            inverseDirection = [(-d) for d in self.directionVector]
-            lightStrength = dot(hitPoint.normal, inverseDirection)
-            lightStrength = max(0, min(1, lightStrength))
-            lightStrength *= (1 - hitPoint.obj.propiedadesMaterial.reflectivity)  # Cambiado 'material' a 'propiedadesMaterial'
-            baseLightColor = [(c * lightStrength) for c in baseLightColor]
-        return baseLightColor
 
-    def calculateSpecularHighlight(self, hitPoint, observerPosition):
-        specularHighlight = self.lightColor
+class DirectionalLight(Light):
+    def __init__(self, color=[1, 1, 1], intensity=1.0, direction=[0, -1, 0]):
+        super().__init__(color, intensity, "Directional")
+        self.direction = normalize_vector(direction)
 
-        if hitPoint:
-            inverseDirection = [(-d) for d in self.directionVector]
-            reflectedRay = calcularReflejo(hitPoint.normal, inverseDirection)
+    def GetLightColor(self, intercept=None):
+        lightColor = super().GetLightColor()
+        if intercept:
+            dir = [(i * -1) for i in self.direction]
+            intensity = dot(intercept.normal, dir)
+            intensity = max(0, min(1, intensity))
+            intensity *= (1 - intercept.obj.material.Ks)
+            lightColor = [(i * intensity) for i in lightColor]
+        return lightColor
 
-            viewDirection = restar_elementos(observerPosition, hitPoint.point)
-            viewDirection = normalize_vector(viewDirection)
+    def GetSpecularColor(self, intercept, viewPos):
+        specColor = self.color
 
-            specularFactor = max(0, dot(viewDirection, reflectedRay) ** hitPoint.obj.propiedadesMaterial.shininess)  # Cambiado 'material' a 'propiedadesMaterial'
-            specularFactor *= hitPoint.obj.propiedadesMaterial.reflectivity
-            specularFactor *= self.brightness
-            specularHighlight = [(c * specularFactor) for c in specularHighlight]
+        if intercept:
+            dir = [(i * -1) for i in self.direction]
+            reflect = calc_reflection(intercept.normal, dir)
 
-        return specularHighlight
+            viewDir = sub_elements(viewPos, intercept.point)
+            viewDir = normalize_vector(viewDir)
+
+            specularity = max(0, dot(viewDir, reflect) ** intercept.obj.material.spec)
+            specularity *= intercept.obj.material.Ks
+            specularity *= self.intensity
+            specColor = [(i * specularity) for i in specColor]
+
+        return specColor

@@ -120,20 +120,20 @@ class RendererRT(object):
 
                     file.write(color)
 
-    def lanzarRayo(self, origen, direccion, objetoEscena=None):
+    def glCastRay(self, origin, direction, sceneObj=None):
 
-        distanciaMinima = float('inf')
-        interseccion = None
-        impacto = None
+        minDist = float('inf')
+        intersection = None
+        impact = None
 
-        for objeto in self.scene:
-            if objeto != objetoEscena:
-                interseccion = objeto.intersectarRayo(origen, direccion)
-                if interseccion is not None:
-                    if interseccion.distancia < distanciaMinima:
-                        impacto = interseccion
-                        distanciaMinima = interseccion.distancia
-        return impacto
+        for object in self.scene:
+            if object != sceneObj:
+                intersection = object.rayIntersect(origin, direction)
+                if intersection is not None:
+                    if intersection.distance < minDist:
+                        impact = intersection
+                        minDist = intersection.distance
+        return impact
 
     def glRender(self):
 
@@ -157,9 +157,9 @@ class RendererRT(object):
                 dir = [pX, pY, -self.nearPlane]
                 dir = normalize_vector(dir)
 
-                intercept = self.lanzarRayo(self.camera.translate, dir)
+                intercept = self.glCastRay(self.camera.translate, dir)
 
                 if intercept is not None:
-                    color = intercept.obj.propiedadesMaterial.computeColor(intercept, self)
+                    color = intercept.obj.material.GetSurfaceColor(intercept, self)
                     self.glPoint(x, y, color)
                     pygame.display.flip()  # for checking each time

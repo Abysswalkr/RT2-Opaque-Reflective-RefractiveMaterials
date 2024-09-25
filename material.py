@@ -1,26 +1,34 @@
-class SurfaceProperties(object):
-    def __init__(self, baseColor, shininess=1.0, reflectivity=0.0):
-        self.baseColor = baseColor
-        self.shininess = shininess
-        self.reflectivity = reflectivity
+OPAQUE = 0
+REFLECTIVE = 1
+TRANSPARENT = 2
 
-    def computeColor(self, intersection, scene):
+class Material(object):
+    def __init__(self, difuse, spec=1.0, Ks=0.0, matType = OPAQUE):
+        self.difuse = difuse
+        self.spec = spec
+        self.Ks = Ks
+        self.matType = matType
 
-        totalLight = [0, 0, 0]
-        surfaceColor = self.baseColor
+    def GetSurfaceColor(self, intercept, renderer):
+        # phong reflection model
+        # LightColors = LightColor + Specular
+        # FinalColor = DiffuseColor * LightColor
 
-        for illumination in scene.lights:
-            occlusion = None
+        lightColor = [0, 0, 0]
+        finalColor = self.difuse
 
-            if illumination.lightCategory == "Directional":
-                directionToLight = [-d for d in illumination.directionVector]
-                occlusion = scene.lanzarRayo(intersection.point, directionToLight, intersection.obj)
+        for light in renderer.lights:
+            shadowIntercept = None
 
-            if occlusion is None:
-                directLightColor = illumination.calculateLightIntensity(intersection)
-                highlightColor = illumination.calculateSpecularHighlight(intersection, scene.camera.translate)
-                totalLight = [(totalLight[i] + directLightColor[i] + highlightColor[i]) for i in range(3)]
+            if light.lighType == "Directional":
+                lightDir = [-i for i in light.direction]
+                shadowIntercept = renderer.glCastRay(intercept.point, lightDir, intercept.obj)
 
-        surfaceColor = [(surfaceColor[i] * totalLight[i]) for i in range(3)]
-        surfaceColor = [min(1, surfaceColor[i]) for i in range(3)]
-        return surfaceColor
+            if shadowIntercept == None:
+                currentLightColor = light.GetLightColor(intercept)
+                currentSpecularColor = light.GetSpecularColor(intercept, renderer.camera.translate)
+                lightColor = [(lightColor[i] + currentLightColor[i] + currentSpecularColor[i]) for i in range(3)]
+
+        finalColor = [(finalColor[i] * lightColor[i]) for i in range(3)]
+        finalColor = [min(1, finalColor[i]) for i in range(3)]
+        return finalColor
