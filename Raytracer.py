@@ -4,15 +4,18 @@ from gl import RendererRT
 from figures import *
 from material import *
 from lights import *
+from texture import Texture
 
 # Configuración de pantalla
-width =  900
-height = 700
+width =  256
+height = 256
 
 screen = pygame.display.set_mode((width, height), pygame.SCALED )
 clock = pygame.time.Clock()
 
 rt = RendererRT(screen)
+rt.envMap = Texture('Textures/fondo.bmp')
+
 rt.glClearColor(0.5,0.0,0.0)
 rt.glClear()
 
