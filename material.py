@@ -1,3 +1,5 @@
+from MathLib import calc_reflection
+
 OPAQUE = 0
 REFLECTIVE = 1
 TRANSPARENT = 2
@@ -15,6 +17,7 @@ class Material(object):
         # FinalColor = DiffuseColor * LightColor
 
         lightColor = [0, 0, 0]
+        reflectColor = [0, 0, 0]
         finalColor = self.difuse
 
         for light in renderer.lights:
@@ -25,10 +28,21 @@ class Material(object):
                 shadowIntercept = renderer.glCastRay(intercept.point, lightDir, intercept.obj)
 
             if shadowIntercept == None:
-                currentLightColor = light.GetLightColor(intercept)
-                currentSpecularColor = light.GetSpecularColor(intercept, renderer.camera.translate)
-                lightColor = [(lightColor[i] + currentLightColor[i] + currentSpecularColor[i]) for i in range(3)]
+                lightColor = [(lightColor[i] + light.GetSpecularColor(intercept, renderer.camera.translate)[i]) for i in
+                              range(3)]
+                if self.matType == OPAQUE:
+                    lightColor = [(lightColor[i] + light.GetLightColor(intercept)[i]) for i in range(3)]
 
-        finalColor = [(finalColor[i] * lightColor[i]) for i in range(3)]
+
+        if self.matType == REFLECTIVE:
+            rayDir = [-i for i in intercept.rayDirection]
+            reflect = calc_reflection(intercept.normal, rayDir)
+            reflectIntercept = renderer.glCastRay(intercept.point, reflect, intercept.obj)
+            if reflectIntercept != None:
+                reflectColor = reflectIntercept.obj.material.GetSurfaceColor(reflectIntercept, renderer)
+            else:
+                reflectColor = renderer.clearColor
+
+        finalColor = [(finalColor[i] * lightColor[i] + reflectColor[i]) for i in range(3)]
         finalColor = [min(1, finalColor[i]) for i in range(3)]
         return finalColor

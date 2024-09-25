@@ -50,5 +50,5 @@ class Sphere(Shape):
         pointDiff = sub_elements(intersectPoint, self.position)
         normalVec = normalize_vector(pointDiff)
 
-        return Intercept(point=intersectPoint, normal=normalVec, distance=t0, obj=self)
+        return Intercept(point=intersectPoint, normal=normalVec, distance=t0, obj=self, rayDirection=direction)
 
