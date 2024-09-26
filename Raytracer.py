@@ -26,18 +26,18 @@ blueMirror = Material(difuse=[0.2,0.2,0.9], spec=128, Ks=0.2, matType=REFLECTIVE
 
 earth = Material(texture = Texture('Textures/deathStar.bmp'))
 champions = Material(texture = Texture('Textures/champions.bmp'), spec=128, Ks=0.2, matType=REFLECTIVE)
+glass = Material(spec = 128, Ks=0.2, ior=1.5, matType= TRANSPARENT)
 
 
 # Iluminación de la escena
 rt.lights.append(DirectionalLight(direction=[0, 1, 0], intensity=0.8))  # Luz desde abajo hacia arriba
-rt.lights.append(DirectionalLight(direction=[0.5, 1, -1], intensity=0.8, color=[1, 1, 1]))  # Otra luz desde un ángulo
 rt.lights.append(AmbientLight(intensity=0.1))  # Luz ambiental débil
 
 # Creación de 6 esferas en 2 filas (3 arriba, 3 abajo)
 #rt.scene.append(Sphere(position=[-1.5, 1, -3], radius=0.5, material=grass))      # Esfera 1 (arriba izquierda)
 #rt.scene.append(Sphere(position=[0, 1, -3], radius=0.5, material=grass))         # Esfera 2 (arriba centro)
-rt.scene.append(Sphere(position=[1.5, 1, -3], radius=0.5, material=earth))    # Esfera 3 (arriba derecha)
-rt.scene.append(Sphere(position=[0, 0, -3], radius=1, material=champions))            # Esfera grande en el centro
+#rt.scene.append(Sphere(position=[1.5, 1, -3], radius=0.5, material=earth))    # Esfera 3 (arriba derecha)
+rt.scene.append(Sphere(position=[0, 0, -3], radius=1, material=glass))            # Esfera grande en el centro
 #rt.scene.append(Sphere(position=[-1.5, -1, -3], radius=0.5, material=grass))     # Esfera 4 (abajo izquierda)
 #rt.scene.append(Sphere(position=[0, -1, -3], radius=0.5, material=grass))        # Esfera 5 (abajo centro)
 #rt.scene.append(Sphere(position=[1.5, -1, -3], radius=0.5, material=grass))      # Esfera 6 (abajo derecha)
