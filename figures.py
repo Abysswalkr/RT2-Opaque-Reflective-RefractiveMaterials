@@ -51,7 +51,7 @@ class Sphere(Shape):
         pointDiff = sub_elements(intersectPoint, self.position)
         normalVec = normalize_vector(pointDiff)
 
-        u = (atan2(normalVec[2], normalVec[0])) / (2*pi) + 0.5
+        u = 1 - ((atan2(normalVec[2], normalVec[0])) / (2 * pi) + 0.5)
         v = acos(-normalVec[1]) / pi
 
         return Intercept(point=intersectPoint,
