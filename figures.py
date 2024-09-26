@@ -1,5 +1,6 @@
 from intercept import Intercept
 from MathLib import *
+from math import tan, pi, atan2, acos
 
 
 class Shape(object):
@@ -50,5 +51,14 @@ class Sphere(Shape):
         pointDiff = sub_elements(intersectPoint, self.position)
         normalVec = normalize_vector(pointDiff)
 
-        return Intercept(point=intersectPoint, normal=normalVec, distance=t0, obj=self, rayDirection=direction)
+        u = (atan2(normalVec[2], normalVec[0])) / (2*pi) + 0.5
+        v = acos(-normalVec[1]) / pi
+
+        return Intercept(point=intersectPoint,
+                         normal=normalVec,
+                         distance=t0,
+                         obj=self,
+                         rayDirection=direction,
+                         texCoords= [u,v]
+                         )
 
